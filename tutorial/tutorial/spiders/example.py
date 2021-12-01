@@ -17,3 +17,16 @@ class ExampleSpider(scrapy.Spider):
                 'subtitle': article.css('span span').xpath('normalize-space()').extract(),
 
             }
+
+        #crawl to next page
+        page=idea.css('h3.card-title a::attr(href)').extract_first()
+        yield response.follow('https://ideas.lego.com'+page, self.parse)
+
+        #example of xpath selector
+        response.xpath('//*/a[text()[contains(.,"Go to next page")]]/../../div[3]/p/text()').extract()[0]
+
+        #examples of copied selectors for nexpt page 
+        #__next > div > div.css-xanrtl > div.css-160klfq.ey3mfx31 > main > div.css-1yuhvjn > nav > ul > li.css-jmbzf4 > a
+        //*[@id="__next"]/div/div[4]/div[2]/main/div[15]/nav/ul/li[14]/a
+        /html/body/div[1]/div[3]/div/div/div[4]/div[2]/main/div[15]/nav/ul/li[14]/a
+        
