@@ -53,6 +53,10 @@ class ExampleSpider(scrapy.Spider):
         selenium_response = Selector(text=self.get_selenium_response(url))
         #time.sleep(15)
 
+        #open csv files that you already scraped
+        #read in the data within 1st column---assuming that that holds url
+        #store in a list
+
         if True:
             for article in response.css('main article.cldt-summary-full-item'):
                 yield {
@@ -60,6 +64,8 @@ class ExampleSpider(scrapy.Spider):
                     'title': article.css('h2').xpath('normalize-space()').extract(),
                     'subtitle': article.css('span span').xpath('normalize-space()').extract(),
 
+                    #compare new url to old ones from csv files
+                    #if u already have then do not scrape the new data---technically check if break will do what u want
                 }
 
         #crawl to next page
