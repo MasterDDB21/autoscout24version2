@@ -53,7 +53,7 @@ class ExampleSpider(scrapy.Spider):
         selenium_response = Selector(text=self.get_selenium_response(url))
         #time.sleep(15)
 
-        if False:
+        if True:
             for article in response.css('main article.cldt-summary-full-item'):
                 yield {
                     'url': response.url,        #include url in database for future reference
@@ -64,18 +64,20 @@ class ExampleSpider(scrapy.Spider):
 
         #crawl to next page
         #page=idea.css('h3.card-title a::attr(href)').extract_first()
+        page=selenium_response.xpath('//*/a[text()[contains(.,"Next")]]/@href').extract_first()
         #yield response.follow('https://ideas.lego.com'+page, self.parse)
+        yield response.follow('https://www.autoscout24.com'+page, self.parse)
 
         #example of xpath selector
         #response.xpath('//*/a[text()[contains(.,"Go to next page")]]/../../div[3]/p/text()').extract()
-        print("SINTERKLAASJE:")
-        yield {
-            'nextPage': selenium_response.xpath('//*/a[text()[contains(.,"Go to next page")]]/../../div[3]/p/text()').extract(),
-            'nextPageSimplified': selenium_response.xpath('//*/a[text()[contains(.,"Go to next page")]]').extract(),
-            'nextPageSimplified2': selenium_response.xpath('//*/a[text()[contains(.,"Next")]]/@href').extract(),
-            'nextPage1': selenium_response.css('#__next > div > div.css-xanrtl > div.css-160klfq.ey3mfx31 > main > div.css-1yuhvjn > nav > ul > li.css-jmbzf4 > a').extract(),
-            'nextPage2': selenium_response.xpath('//*[@id="__next"]/div/div[4]/div[2]/main/div[15]/nav/ul/li[5]/a').extract(),
-        }
+#        print("SINTERKLAASJE:")
+        # yield {
+        #     #'nextPage': selenium_response.xpath('//*/a[text()[contains(.,"Go to next page")]]/../../div[3]/p/text()').extract(),
+        #     #'nextPageSimplified': selenium_response.xpath('//*/a[text()[contains(.,"Go to next page")]]').extract(),
+        #     'nextPageSimplified2': selenium_response.xpath('//*/a[text()[contains(.,"Next")]]/@href').extract(),
+        #     #'nextPage1': selenium_response.css('#__next > div > div.css-xanrtl > div.css-160klfq.ey3mfx31 > main > div.css-1yuhvjn > nav > ul > li.css-jmbzf4 > a').extract(),
+        #     #'nextPage2': selenium_response.xpath('//*[@id="__next"]/div/div[4]/div[2]/main/div[15]/nav/ul/li[5]/a').extract(),
+        # }
 
         #examples of copied selectors for nexpt page 
         #__next > div > div.css-xanrtl > div.css-160klfq.ey3mfx31 > main > div.css-1yuhvjn > nav > ul > li.css-jmbzf4 > a
