@@ -57,7 +57,7 @@ class ExampleSpider(scrapy.Spider):
         #read in the data within 1st column---assuming that that holds url
         #store in a list
 
-        if True:
+        if False:
             for article in response.css('main article.cldt-summary-full-item'):
                 yield {
                     'url': response.url,        #include url in database for future reference
