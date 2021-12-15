@@ -7,17 +7,22 @@ class ExampleSpider(scrapy.Spider):
     name = 'example'
     allowed_domains = ['autoscout24.com']
     #   start_urls = [r"C:\Users\roblo\autoscout24\tutorial\Used cars for sale - AutoScout24.html"]
-    start_urls = ['https://www.autoscout24.com/lst?sort=standard&desc=0&ustate=N%2CU&atype=C'#]
+    #    start_urls = [#'https://www.autoscout24.com/lst?sort=standard&desc=0&ustate=N%2CU&atype=C'#]
+    #                    'https://www.autoscout24.com/lst/?sort=standard&desc=0&ustate=N%2CU&size=20&page=1&atype=C&',
+                    #'https://www.autoscout24.com/lst/?sort=standard&desc=0&ustate=N%2CU&size=20&page=2&atype=C&',
+    #                    'https://www.autoscout24.com/lst/?sort=standard&desc=0&ustate=N%2CU&size=20&page=3&atype=C&',
+    #                    'https://www.autoscout24.com/lst/?sort=standard&desc=0&ustate=N%2CU&size=20&page=4&atype=C&',
+    #                    'https://www.autoscout24.com/lst/?sort=standard&desc=0&ustate=N%2CU&size=20&page=5&atype=C&',
                   # 'file:///C:/Users/roblo/autoscout24/tutorial/locallyStoredWebPage.html'
-                ]
-    #start_urls = ['https://www.autoscout24.com/lst/?sort=standard&desc=0&ustate=N%2CU&size=20&page=1&atype=C&']
+    #                ]
+    start_urls = ['https://www.autoscout24.com/lst/?sort=standard&desc=0&ustate=N%2CU&size=20&page=1&atype=C&']
     #start_urls = ["file:///C:/Users/roblo/autoscout24/tutorial/aap.htm"]
 
     #Initalize the webdriver that needs to run when you use selenium   
     def __init__(self):
         #add chromedriver_binary to path in order to run
         #(nationalevacaturebank) C:\Users\roblo\nationalevacaturebank\tutorial>set PATH=%PATH%;C:\Users\roblo\AppData\Local\conda\conda\envs\nationalevacaturebank\Lib\site-packages\chromedriver_binary
- 
+
         #start up
         self.driver = webdriver.Chrome()
         self.driver.implicitly_wait(5) # wait maximally 10 seconds; see https://selenium-python.readthedocs.io/waits.html
@@ -41,10 +46,8 @@ class ExampleSpider(scrapy.Spider):
         # except:
         #     pass
 
-
         #return encoded page that is accessable after the click
         return self.driver.page_source.encode('utf-8')
-
 
     def parse(self, response):
         # Here you got response from webdriver
@@ -57,26 +60,33 @@ class ExampleSpider(scrapy.Spider):
         #read in the data within 1st column---assuming that that holds url
         #store in a list
 
-        if False:
-            for article in response.css('main article.cldt-summary-full-item'):
-                yield {
-                    'url': response.url,        #include url in database for future reference
-                    'title': article.css('h2').xpath('normalize-space()').extract(),
-                    'subtitle': article.css('span span').xpath('normalize-space()').extract(),
+        # if True:
+        #     for article in response.css('main article.cldt-summary-full-item'):
+        #         yield {
+        #             'url': response.url,        #include url in database for future reference
+        #             'title': article.css('h2').xpath('normalize-space()').extract(),
+        #             'subtitle': article.css('span span').xpath('normalize-space()').extract(),
 
-                    #compare new url to old ones from csv files
-                    #if u already have then do not scrape the new data---technically check if break will do what u want
-                }
+        #             #compare new url to old ones from csv files
+        #             #if u already have then do not scrape the new data---technically check if break will do what u want
+        #         }
 
         #crawl to next page
+        ###CAREFUL: results in an url that may cause a 400 because of bad syntax:
+        #https://www.autoscout24.com/    +     ?&sort=standard&desc=0&ustate=N%2CU&size=20&atype=C&page=3
+        #REMEDY: https://www.autoscout24.com/lst/    +   ... IS OKAY!
         #page=idea.css('h3.card-title a::attr(href)').extract_first()
         page=selenium_response.xpath('//*/a[text()[contains(.,"Next")]]/@href').extract_first()
         #yield response.follow('https://ideas.lego.com'+page, self.parse)
-        yield response.follow('https://www.autoscout24.com'+page, self.parse)
+        # page=response.xpath('//*/a[text()[contains(.,"Next")]]/@href').extract_first()
+        print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"+page)
+        yield response.follow('https://www.autoscout24.com/lst/'+page, self.parse)
+
+        #self.driver.close()
 
         #example of xpath selector
         #response.xpath('//*/a[text()[contains(.,"Go to next page")]]/../../div[3]/p/text()').extract()
-#        print("SINTERKLAASJE:")
+        #print("SINTERKLAASJE:")
         # yield {
         #     #'nextPage': selenium_response.xpath('//*/a[text()[contains(.,"Go to next page")]]/../../div[3]/p/text()').extract(),
         #     #'nextPageSimplified': selenium_response.xpath('//*/a[text()[contains(.,"Go to next page")]]').extract(),
